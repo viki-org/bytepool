@@ -42,4 +42,4 @@ You can get the returned value as `Bytes()` or `String()`
 ### Installation
 Install using the "go get" command:
 
-    go get github.com/viki-org/bytepoolgo/bytepool
+    go get github.com/viki-org/bytepool
