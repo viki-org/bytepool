@@ -62,6 +62,18 @@ func TestCanReadFromMultipleSources(t *testing.T) {
   }
 }
 
+func TestCanSetThePosition(t *testing.T) {
+  expected := "hello."
+  item := newItem(100, nil)
+  item.WriteString("hello world")
+  item.Position(5)
+  item.WriteString(".")
+
+  if item.String() != expected {
+    t.Errorf("Expecting %v, got %v", expected, item.String())
+  }
+}
+
 func TestCloseResetsTheLength(t *testing.T) {
   item := newItem(100, nil)
   item.WriteString("hello world")

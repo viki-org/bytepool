@@ -48,6 +48,10 @@ func (item *Item) Len() int {
   return item.length;
 }
 
+func (item *Item) Position(position int) {
+  item.length = position
+}
+
 func (item *Item) Close() {
   item.length = 0
   if item.pool != nil {
