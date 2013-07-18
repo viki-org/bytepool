@@ -17,6 +17,7 @@ While the 2nd example avoids any over-allocation as well reallocation from a dyn
 
 This allocation can be avoided by using a pool of `[]byte`:
 
+    //pre-allocates 256MB (8K arrays of 32K bytes each)
     var pool = bytepool.New(8196, 32768)
     func handler(res http.ResponseWriter, req *http.Request) {
       bytes := pool.Checkout()
