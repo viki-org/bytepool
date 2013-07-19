@@ -6,7 +6,7 @@ If the pool is empty, new items will be created on the fly, but the size of the 
 ### Example
 A common example is reading the body of an HTTP Request. The memory-unfriendly approach is to do:
 
-    body, _ := ioutil.ReadFull(req.Body
+    body, _ := ioutil.ReadFull(req.Body)
 
 A slightly better approach would be to predefine the array length:
 
@@ -22,7 +22,7 @@ This allocation can be avoided by using a pool of `[]byte`:
     func handler(res http.ResponseWriter, req *http.Request) {
       bytes := pool.Checkout()
       defer bytes.Close()
-      bytes.ReadFrom(req.Body
+      bytes.ReadFrom(req.Body)
       body := bytes.Bytes()
       ...
     }
