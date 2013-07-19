@@ -1,4 +1,6 @@
 ### BytePool
+** This code is not in production yet. Next week. **
+
 BytePool manages a thread-safe pool of `[]byte`. By using a pool of pre-allocated arrays, one reduces the number of allocations (and deallocations) as well as reducing memory fragmentation.
 
 If the pool is empty, new items will be created on the fly, but the size of the pool will not grow. Furthermore, the returned items are fixed-length `[]byte` - they will not grow as needed. The idea is for you to favor over-allocation upfront.

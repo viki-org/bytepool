@@ -1,4 +1,5 @@
 package bytepool
+// Package bytepool provides a pool of fixed-length []byte
 
 type Pool struct {
   capacity int
