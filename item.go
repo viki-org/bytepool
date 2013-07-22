@@ -52,9 +52,10 @@ func (item *Item) Position(position int) {
   item.length = position
 }
 
-func (item *Item) Close() {
+func (item *Item) Close() error{
   item.length = 0
   if item.pool != nil {
     item.pool.list <- item
   }
+  return nil
 }
