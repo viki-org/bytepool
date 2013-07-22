@@ -36,6 +36,11 @@ func (item *Item) ReadFrom(reader io.Reader) (int64, error) {
   }
 }
 
+func (item *Item) Read(p []byte) (n int, err error) {
+  n = copy(p, item.bytes[0:item.length])
+  return
+}
+
 func (item *Item) Bytes() []byte {
   return item.bytes[0:item.length]
 }

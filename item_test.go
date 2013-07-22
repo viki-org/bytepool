@@ -105,3 +105,15 @@ func TestTruncatesTheContentToTheLength(t *testing.T) {
     t.Errorf("Expecting %q, got %q", expected, actual)
   }
 }
+
+func TestCanReadIntoVariousSizedByteArray(t *testing.T) {
+  item := newItem(5, nil)
+  item.WriteString("hello")
+  for size, expected := range map[int]string{3: "hel", 5: "hello", 7: "hello\x00\x00"} {
+    target := make([]byte, size)
+    item.Read(target)
+    if string(target) != expected {
+      t.Errorf("Expecting %q, got %q", expected, string(target))
+    }
+  }
+}
