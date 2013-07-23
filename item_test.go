@@ -45,6 +45,19 @@ func TestWriteAByte(t *testing.T) {
   }
 }
 
+func TestDoesNotWriteAByteWhenFull(t *testing.T) {
+  expected := []byte("the s")
+  item := newItem(5, nil)
+  item.Write([]byte("the "))
+  item.WriteByte(byte('s'))
+  item.WriteByte(byte('p'))
+  actual := item.Bytes()
+
+  if bytes.Compare(actual, expected) != 0 {
+    t.Errorf("Expecting %v, got %v", expected, actual)
+  }
+}
+
 func TestCanWriteFromAReader(t *testing.T) {
   expected := []byte("I am in a reader")
   item := newItem(60, nil)

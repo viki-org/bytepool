@@ -18,17 +18,25 @@ func newItem(capacity int, pool *Pool) *Item {
   }
 }
 
-func (item *Item) Write(b []byte) {
-  item.length += copy(item.bytes[item.length:], b)
+func (item *Item) Write(b []byte) int {
+  if item.Full() { return 0 }
+  n := copy(item.bytes[item.length:], b)
+  item.length += n
+  return n
 }
 
-func (item *Item) WriteByte(b byte) {
+func (item *Item) WriteByte(b byte) bool {
+  if item.Full() { return false }
   item.bytes[item.length] = b
   item.length += 1
+  return true
 }
 
-func (item *Item) WriteString(s string) {
-  item.length += copy(item.bytes[item.length:], s)
+func (item *Item) WriteString(s string) int {
+  if item.Full() { return 0 }
+  n := copy(item.bytes[item.length:], s)
+  item.length += n
+  return n
 }
 
 func (item *Item) ReadFrom(reader io.Reader) (int64, error) {
@@ -43,10 +51,10 @@ func (item *Item) ReadFrom(reader io.Reader) (int64, error) {
 }
 
 func (item *Item) Read(p []byte) (int, error) {
-  if item.position == item.length { return 0, io.EOF }
+  if item.Drained() { return 0, io.EOF }
   n := copy(p, item.bytes[item.position:item.length])
   item.position += n
-  if item.position == item.length { return n, io.EOF }
+  if item.Drained() { return n, io.EOF }
   return n, nil
 }
 
@@ -64,6 +72,14 @@ func (item *Item) Len() int {
 
 func (item *Item) Position(position int) {
   item.length = position
+}
+
+func (item *Item) Full() bool {
+  return item.length == cap(item.bytes)
+}
+
+func (item *Item) Drained() bool {
+  return item.length == item.position
 }
 
 func (item *Item) Close() error{
