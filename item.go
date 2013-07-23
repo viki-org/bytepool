@@ -22,6 +22,11 @@ func (item *Item) Write(b []byte) {
   item.length += copy(item.bytes[item.length:], b)
 }
 
+func (item *Item) WriteByte(b byte) {
+  item.bytes[item.length] = b
+  item.length += 1
+}
+
 func (item *Item) WriteString(s string) {
   item.length += copy(item.bytes[item.length:], s)
 }

@@ -32,6 +32,19 @@ func TestCanWriteAByteArray(t *testing.T) {
   }
 }
 
+func TestWriteAByte(t *testing.T) {
+  expected := []byte("the sp")
+  item := newItem(60, nil)
+  item.Write([]byte("the "))
+  item.WriteByte(byte('s'))
+  item.WriteByte(byte('p'))
+  actual := item.Bytes()
+
+  if bytes.Compare(actual, expected) != 0 {
+    t.Errorf("Expecting %v, got %v", expected, actual)
+  }
+}
+
 func TestCanWriteFromAReader(t *testing.T) {
   expected := []byte("I am in a reader")
   item := newItem(60, nil)
