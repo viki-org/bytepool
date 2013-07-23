@@ -7,6 +7,7 @@ import (
 type Item struct {
   pool *Pool
   length int
+  position int
   bytes []byte
 }
 
@@ -36,9 +37,12 @@ func (item *Item) ReadFrom(reader io.Reader) (int64, error) {
   }
 }
 
-func (item *Item) Read(p []byte) (n int, err error) {
-  n = copy(p, item.bytes[0:item.length])
-  return
+func (item *Item) Read(p []byte) (int, error) {
+  if item.position == item.length { return 0, io.EOF }
+  n := copy(p, item.bytes[item.position:item.length])
+  item.position += n
+  if item.position == item.length { return n, io.EOF }
+  return n, nil
 }
 
 func (item *Item) Bytes() []byte {

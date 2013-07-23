@@ -1,6 +1,7 @@
 package bytepool
 
 import (
+  "io"
   "bytes"
   "testing"
 )
@@ -31,7 +32,7 @@ func TestCanWriteAByteArray(t *testing.T) {
   }
 }
 
-func TestCanReadFromAReader(t *testing.T) {
+func TestCanWriteFromAReader(t *testing.T) {
   expected := []byte("I am in a reader")
   item := newItem(60, nil)
   n, _ := item.ReadFrom(bytes.NewBuffer(expected))
@@ -45,7 +46,7 @@ func TestCanReadFromAReader(t *testing.T) {
   }
 }
 
-func TestCanReadFromMultipleSources(t *testing.T) {
+func TestCanWriteFromMultipleSources(t *testing.T) {
   expected := []byte("startI am in a readerend")
   bufferContent := []byte("I am in a reader")
   item := newItem(100, nil)
@@ -107,13 +108,34 @@ func TestTruncatesTheContentToTheLength(t *testing.T) {
 }
 
 func TestCanReadIntoVariousSizedByteArray(t *testing.T) {
-  item := newItem(5, nil)
-  item.WriteString("hello")
   for size, expected := range map[int]string{3: "hel", 5: "hello", 7: "hello\x00\x00"} {
+    item := newItem(5, nil)
+    item.WriteString("hello")
     target := make([]byte, size)
     item.Read(target)
     if string(target) != expected {
       t.Errorf("Expecting %q, got %q", expected, string(target))
     }
   }
+}
+
+func TestReadDoesNotAutomaticallyRewind(t *testing.T) {
+  item := newItem(5, nil)
+  item.WriteString("hello")
+  b := make([]byte, 5)
+
+  n, err  := item.Read(b[0:2])
+  if n != 2 { t.Errorf("expecting to have read 2 bytes, but got %d", n) }
+  if err != nil { t.Errorf("should have gotten nil error, got %v", err) }
+  if string(b[0:2]) != "he" { t.Errorf("expecting to have read he, got %v", string(b[0:2])) }
+
+  n, err  = item.Read(b[2:])
+  if n != 3 { t.Errorf("expecting to have read 3 bytes, but got %d", n)}
+  if err != io.EOF { t.Errorf("error should be io.EOF, got %v", err)}
+  if string(b[0:5]) != "hello" { t.Errorf("expecting to have read hello, got %v", string(b[0:5])) }
+
+  n, err  = item.Read(b)
+  if n != 0 { t.Errorf("expecting to have read 0 bytes, but got %d", n)}
+  if err != io.EOF { t.Errorf("error should be io.EOF, got %v", err)}
+  if string(b[0:5]) != "hello" { t.Errorf("expecting to have read hello, got %v", string(b[0:5])) }
 }
