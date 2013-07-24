@@ -70,8 +70,12 @@ func (item *Item) Len() int {
   return item.length;
 }
 
-func (item *Item) Position(position int) {
+func (item *Item) Position(position int) bool {
+  if position < 0 || position > cap(item.bytes){ 
+    return false
+  }
   item.length = position
+  return true
 }
 
 func (item *Item) Full() bool {

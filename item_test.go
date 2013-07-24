@@ -128,6 +128,30 @@ func TestCloseResetsTheLength(t *testing.T) {
   }
 }
 
+func TestCannotSetThePositionToANegativeValue(t *testing.T) {
+  expected := "hello world."
+  item := newItem(25, nil)
+  item.WriteString("hello world")
+  item.Position(-10)
+  item.WriteString(".")
+
+  if item.String() != expected {
+    t.Errorf("Expecting %v, got %v", expected, item.String())
+  }
+}
+
+func TestCannotSetThePositionBeyondTheLength(t *testing.T) {
+  expected := "hello world."
+  item := newItem(25, nil)
+  item.WriteString("hello world")
+  item.Position(30)
+  item.WriteString(".")
+
+  if item.String() != expected {
+    t.Errorf("Expecting %v, got %v", expected, item.String())
+  }
+}
+
 func TestTruncatesTheContentToTheLength(t *testing.T) {
   expected := "hell"
   item := newItem(4, nil)
