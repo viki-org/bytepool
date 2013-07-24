@@ -84,6 +84,7 @@ func (item *Item) Drained() bool {
 
 func (item *Item) Close() error{
   item.length = 0
+  item.position = 0
   if item.pool != nil {
     item.pool.list <- item
   }
