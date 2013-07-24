@@ -7,7 +7,7 @@ import (
 type Item struct {
   pool *Pool
   length int
-  position int
+  read int
   bytes []byte
 }
 
@@ -52,8 +52,8 @@ func (item *Item) ReadFrom(reader io.Reader) (int64, error) {
 
 func (item *Item) Read(p []byte) (int, error) {
   if item.Drained() { return 0, io.EOF }
-  n := copy(p, item.bytes[item.position:item.length])
-  item.position += n
+  n := copy(p, item.bytes[item.read:item.length])
+  item.read += n
   if item.Drained() { return n, io.EOF }
   return n, nil
 }
@@ -79,12 +79,12 @@ func (item *Item) Full() bool {
 }
 
 func (item *Item) Drained() bool {
-  return item.length == item.position
+  return item.length == item.read
 }
 
 func (item *Item) Close() error{
   item.length = 0
-  item.position = 0
+  item.read = 0
   if item.pool != nil {
     item.pool.list <- item
   }
