@@ -45,7 +45,7 @@ func (item *Item) ReadFrom(reader io.Reader) (int64, error) {
     r, err := reader.Read(item.bytes[item.length:])
     read += int64(r)
     item.length += r
-    if err == io.EOF { return read, nil }
+    if err == io.EOF || item.Full() { return read, nil }
     if err != nil { return read, err }
   }
 }

@@ -58,6 +58,17 @@ func TestDoesNotWriteAByteWhenFull(t *testing.T) {
   }
 }
 
+func TestHAndlesReadingAnExactSize(t *testing.T) {
+  expected := "12345"
+  item := newItem(5, nil)
+  buffer := bytes.NewBufferString(expected)
+  item.ReadFrom(buffer)
+
+  if item.String() != expected {
+    t.Errorf("Expecting %v, got %v", expected, item.String())
+  }
+}
+
 func TestCanWriteFromAReader(t *testing.T) {
   expected := []byte("I am in a reader")
   item := newItem(60, nil)
