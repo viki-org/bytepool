@@ -18,11 +18,11 @@ func newItem(capacity int, pool *Pool) *Item {
   }
 }
 
-func (item *Item) Write(b []byte) int {
-  if item.Full() { return 0 }
+func (item *Item) Write(b []byte) (int, error) {
+  if item.Full() { return 0, io.ErrShortWrite }
   n := copy(item.bytes[item.length:], b)
   item.length += n
-  return n
+  return n, nil
 }
 
 func (item *Item) WriteByte(b byte) bool {
@@ -71,7 +71,7 @@ func (item *Item) Len() int {
 }
 
 func (item *Item) Position(position int) bool {
-  if position < 0 || position > cap(item.bytes){ 
+  if position < 0 || position > cap(item.bytes){
     return false
   }
   item.length = position
