@@ -62,6 +62,10 @@ func (item *Item) Bytes() []byte {
   return item.bytes[0:item.length]
 }
 
+func (item *Item) Raw() []byte {
+  return item.bytes
+}
+
 func (item *Item) String() string {
   return string(item.Bytes())
 }
