@@ -1,7 +1,12 @@
 package bytepool
 // Package bytepool provides a pool of fixed-length []byte
 
+import (
+  "sync/atomic"
+)
+
 type Pool struct {
+  misses int32
   capacity int
   list chan *Item
 }
@@ -22,6 +27,7 @@ func (pool *Pool) Checkout() *Item {
   select {
     case item = <- pool.list:
     default:
+      atomic.AddInt32(&pool.misses, 1)
       item = newItem(pool.capacity, nil)
   }
   return item
@@ -29,4 +35,8 @@ func (pool *Pool) Checkout() *Item {
 
 func (pool *Pool) Len() int {
   return len(pool.list)
+}
+
+func (pool *Pool) Misses() int32 {
+  return atomic.LoadInt32(&pool.misses)
 }

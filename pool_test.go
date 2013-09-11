@@ -29,7 +29,10 @@ func TestDynamicallyCreatesAnItemWhenPoolIsEmpty(t *testing.T) {
   item1.Close()
   item2.Close()
   if p.Len() != 1 {
-    t.Error("Expecting a pool lenght of 1, got %d", p.Len())
+    t.Errorf("Expecting a pool lenght of 1, got %d", p.Len())
+  }
+  if p.Misses() != 1 {
+    t.Errorf("Expecting a miss count of 1, got %d", p.Misses())
   }
 
 }
@@ -42,6 +45,6 @@ func TestReleasesAnItemBackIntoThePool(t *testing.T) {
   item2 := p.Checkout()
   defer item2.Close()
   if reflect.ValueOf(item2).Pointer() != pointer {
-    t.Errorf("Pool returned an unexected item")
+    t.Error("Pool returned an unexected item")
   }
 }
