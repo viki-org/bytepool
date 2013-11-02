@@ -152,6 +152,32 @@ func TestCannotSetThePositionBeyondTheLength(t *testing.T) {
   }
 }
 
+func TestTrimLastIfTrimsOnMatch(t *testing.T) {
+  expected := "hello world"
+  item := newItem(25, nil)
+  item.WriteString("hello world.")
+  r := item.TrimLastIf(byte('.'))
+  if r != true {
+    t.Error("Expecting TrimLastIf to return true")
+  }
+  if item.String() != expected {
+    t.Errorf("Expecting %v, got %v", expected, item.String())
+  }
+}
+
+func TestTrimLastIfTrimsOnNoMatch(t *testing.T) {
+  expected := "hello world."
+  item := newItem(25, nil)
+  item.WriteString("hello world.")
+  r := item.TrimLastIf(byte(','))
+  if r != false {
+    t.Error("Expecting TrimLastIf to return false")
+  }
+  if item.String() != expected {
+    t.Errorf("Expecting %v, got %v", expected, item.String())
+  }
+}
+
 func TestTruncatesTheContentToTheLength(t *testing.T) {
   expected := "hell"
   item := newItem(4, nil)

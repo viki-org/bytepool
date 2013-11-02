@@ -98,3 +98,26 @@ func TestJsonAMultiValueObject(t *testing.T) {
     t.Errorf("Expecting %q, got %q", expected, actual)
   }
 }
+
+func TestJsonNestedObjects(t *testing.T) {
+  expected := `[1,{"name":"goku","levels":[2,{"over":{"9000":"!"}}]}]`
+  item := newJsonItem(100, nil)
+  item.BeginArray()
+  item.WriteInt(1)
+  item.BeginObject()
+  item.WriteKeyString("name","goku")
+  item.WriteKeyArray("levels")
+  item.WriteInt(2)
+  item.BeginObject()
+  item.WriteKeyObject("over")
+  item.WriteKeyString("9000", "!")
+  item.EndObject()
+  item.EndObject()
+  item.EndArray()
+  item.EndObject()
+  item.EndArray()
+  actual := item.String()
+  if actual != expected {
+    t.Errorf("Expecting %q, got %q", expected, actual)
+  }
+}

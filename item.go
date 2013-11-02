@@ -71,7 +71,14 @@ func (item *Item) String() string {
 }
 
 func (item *Item) Len() int {
-  return item.length;
+  return item.length
+}
+
+func (item *Item) TrimLastIf(b byte) bool {
+  l := item.Len() - 1
+  if l == -1 || item.bytes[l] != b { return false }
+  item.Position(l)
+  return true
 }
 
 func (item *Item) Position(position int) bool {

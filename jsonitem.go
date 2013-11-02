@@ -7,9 +7,9 @@ import (
 
 type JsonItem struct {
   *Item
+  depth int
   added bool
   pool *JsonPool
-  addDelimiter bool
 }
 
 func newJsonItem(capacity int, pool *JsonPool) *JsonItem {
@@ -57,6 +57,20 @@ func (item *JsonItem) WriteKeyBool(key string, value bool) int {
   return item.writeKeyValue(key, strconv.FormatBool(value))
 }
 
+func (item *JsonItem) WriteKeyArray(key string) int {
+  n := item.writeString(key, false)
+  if item.WriteByte(byte(':')) { n++ }
+  if item.BeginArray() { n++ }
+  return n
+}
+
+func (item *JsonItem) WriteKeyObject(key string) int {
+  n := item.writeString(key, false)
+  if item.WriteByte(byte(':')) { n++ }
+  if item.BeginObject() { n++ }
+  return n
+}
+
 func (item *JsonItem) writeKeyValue(key, value string) int {
   n := item.writeString(key, false)
   if item.WriteByte(byte(':')) { n++ }
@@ -72,32 +86,30 @@ func (item *JsonItem) writeString(s string, delimit bool) int {
 
 func (item *JsonItem) BeginArray() bool {
   item.added = false
-  item.addDelimiter = true
+  item.depth++
   return item.WriteByte('[')
 }
 
 func (item *JsonItem) EndArray() bool {
-  item.addDelimiter = false
-  if item.added {item.Position(item.Len() - 1)}
+  item.depth--
+  item.TrimLastIf(',')
   return item.WriteByte(']')
 }
 
 func (item *JsonItem) BeginObject() bool {
-  item.added = false
-  item.addDelimiter = true
+  item.depth++
   return item.WriteByte('{')
 }
 
 func (item *JsonItem) EndObject() bool {
-  item.addDelimiter = false
-  if item.added {item.Position(item.Len() - 1)}
+  item.depth--
+  item.TrimLastIf(',')
   return item.WriteByte('}')
 }
 
 func (item *JsonItem) delimit(length int) int {
-  if item.addDelimiter == false { return length }
+  if item.depth == 0 { return length }
   item.WriteByte(byte(','))
-  item.added = true
   return length + 1
 }
 
