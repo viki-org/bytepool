@@ -5,7 +5,7 @@ import (
   "testing"
 )
 
-func TestPoolEachItemIsOfASpecifiedSize(t *testing.T) {
+func TestJsonPoolEachItemIsOfASpecifiedSize(t *testing.T) {
   expected := 9
   p := New(1, expected)
   item := p.Checkout()
@@ -15,7 +15,7 @@ func TestPoolEachItemIsOfASpecifiedSize(t *testing.T) {
   }
 }
 
-func TestPoolDynamicallyCreatesAnItemWhenPoolIsEmpty(t *testing.T) {
+func TestJsonPoolDynamicallyCreatesAnItemWhenPoolIsEmpty(t *testing.T) {
   p := New(1,2)
   item1 := p.Checkout()
   item2 := p.Checkout()
@@ -36,7 +36,7 @@ func TestPoolDynamicallyCreatesAnItemWhenPoolIsEmpty(t *testing.T) {
   }
 
 }
-func TestPoolReleasesAnItemBackIntoThePool(t *testing.T) {
+func TestJsonPoolReleasesAnItemBackIntoThePool(t *testing.T) {
   p := New(1, 20)
   item1 := p.Checkout()
   pointer := reflect.ValueOf(item1).Pointer()
