@@ -39,7 +39,7 @@ If the buffer will be used to generate JSON, consider creating a `JsonPool` inst
 
     var pool = bytepool.NewJson(8196, 32768)
 
-Items returned from a `JsonPool` have a number of helper methods for writing JSON (in addition to most of the methods of the base type): 
+Items returned from a `JsonPool` have a number of helper methods for writing JSON (in addition to most of the methods of the base type):
 
     buffer := pool.Checkout()
     buffer.BeginArray()
@@ -48,9 +48,17 @@ Items returned from a `JsonPool` have a number of helper methods for writing JSO
     }
     buffer.EndArray()
 
-The above will take care of properly delimiting the array. Similar behavior can be achieved with the `BeginObject`, `EndObject` and the various key-value helpers: `WriteKeyString`, `WriteKeyInt`, `WriteKeyBool`. 
+The above will take care of properly delimiting the array. Similar behavior can be achieved with the `BeginObject`, `EndObject` and the various key-value helpers: `WriteKeyString`, `WriteKeyInt`, `WriteKeyBool`.
 
 Key values are expected to be escaped. String values will automatically be escaped. This can be circumvented by using the alternative `WriteSafeString` and `WriteKeySafeString` methods.
+
+You can also use the `WriteKeyValue` to append other JSON object/array that is passed as an string. You should use this method carefully. E.g:
+
+  buffer.BeginObject()
+  buffer.WriteKeyString("name":"tyler")
+  buffer.WriteKeyValue("metadata", `{"age": 12}`)
+  buffer.EndObject()
+  println(buffer.String()) // outputs: {"name":"tyler","metadata":{"age":12}}
 
 ### Installation
 Install using the "go get" command:
