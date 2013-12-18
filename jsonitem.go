@@ -118,14 +118,30 @@ func (item *JsonItem) EndObject() (int, error) {
 
 func (item *JsonItem) delimit(length int) int {
   if item.depth == 0 { return length }
-  item.WriteByte(byte(','))
+  item.WriteByte(',')
   return length + 1
 }
 
 func (item *JsonItem) Close() error {
+  item.TrimLastIf(',')
   item.Item.Close()
   if item.pool != nil {
     item.pool.list <- item
   }
   return nil
+}
+
+func (item *JsonItem) Bytes() []byte {
+  item.TrimLastIf(',')
+  return item.Item.Bytes()
+}
+
+func (item *JsonItem) Raw() []byte {
+  item.TrimLastIf(',')
+  return item.Item.Raw()
+}
+
+func (item *JsonItem) String() string {
+  item.TrimLastIf(',')
+  return item.Item.String()
 }

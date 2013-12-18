@@ -59,17 +59,14 @@ func (item *Item) Read(p []byte) (int, error) {
 }
 
 func (item *Item) Bytes() []byte {
-  item.TrimLastIf(',')
   return item.bytes[0:item.length]
 }
 
 func (item *Item) Raw() []byte {
-  item.TrimLastIf(',')
   return item.bytes
 }
 
 func (item *Item) String() string {
-  item.TrimLastIf(',')
   return string(item.Bytes())
 }
 
@@ -100,7 +97,7 @@ func (item *Item) Drained() bool {
   return item.length == item.read
 }
 
-func (item *Item) Close() error{
+func (item *Item) Close() error {
   item.length = 0
   item.read = 0
   if item.pool != nil {
