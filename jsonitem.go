@@ -1,6 +1,7 @@
 package bytepool
 
 import (
+  "time"
   "strconv"
   "strings"
 )
@@ -37,6 +38,10 @@ func (item *JsonItem) WriteBool(value bool) int {
   return item.delimit(n)
 }
 
+func (item *JsonItem) WriteTime(value time.Time) int {
+  return item.WriteString(value.Format(time.RFC3339))
+}
+
 func (item *JsonItem) WriteSafeString(s string) int {
   return item.writeString(s, true)
 }
@@ -55,6 +60,10 @@ func (item *JsonItem) WriteKeyInt(key string, value int) int {
 
 func (item *JsonItem) WriteKeyBool(key string, value bool) int {
   return item.WriteKeyValue(key, strconv.FormatBool(value))
+}
+
+func (item *JsonItem) WriteKeyTime(key string, value time.Time) int {
+  return item.WriteKeyString(key, value.Format(time.RFC3339))
 }
 
 func (item *JsonItem) WriteKeyArray(key string) int {

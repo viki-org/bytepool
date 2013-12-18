@@ -48,7 +48,7 @@ Items returned from a `JsonPool` have a number of helper methods for writing JSO
     }
     buffer.EndArray()
 
-The above will take care of properly delimiting the array. Similar behavior can be achieved with the `BeginObject`, `EndObject` and the various key-value helpers: `WriteKeyString`, `WriteKeyInt`, `WriteKeyBool`.
+The above will take care of properly delimiting the array. Similar behavior can be achieved with the `BeginObject`, `EndObject` and the various key-value helpers: `WriteKeyString`, `WriteKeyInt`, `WriteKeyBool`, `WriteKeyTime` (time.Time).
 
 Key values are expected to be escaped. String values will automatically be escaped. This can be circumvented by using the alternative `WriteSafeString` and `WriteKeySafeString` methods.
 
