@@ -131,6 +131,11 @@ func (item *JsonItem) Close() error {
   return nil
 }
 
+func (item *JsonItem) Len() int {
+  item.TrimLastIf(',')
+  return item.Item.Len()
+}
+
 func (item *JsonItem) Bytes() []byte {
   item.TrimLastIf(',')
   return item.Item.Bytes()
