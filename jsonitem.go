@@ -99,10 +99,10 @@ func (item *JsonItem) BeginArray() bool {
   return item.WriteByte('[')
 }
 
-func (item *JsonItem) EndArray() bool {
+func (item *JsonItem) EndArray() (int, error) {
   item.depth--
   item.TrimLastIf(',')
-  return item.WriteByte(']')
+  return item.Write([]byte("],"))
 }
 
 func (item *JsonItem) BeginObject() bool {
@@ -110,10 +110,10 @@ func (item *JsonItem) BeginObject() bool {
   return item.WriteByte('{')
 }
 
-func (item *JsonItem) EndObject() bool {
+func (item *JsonItem) EndObject() (int, error) {
   item.depth--
   item.TrimLastIf(',')
-  return item.WriteByte('}')
+  return item.Write([]byte("},"))
 }
 
 func (item *JsonItem) delimit(length int) int {

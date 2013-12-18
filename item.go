@@ -59,14 +59,17 @@ func (item *Item) Read(p []byte) (int, error) {
 }
 
 func (item *Item) Bytes() []byte {
+  item.TrimLastIf(',')
   return item.bytes[0:item.length]
 }
 
 func (item *Item) Raw() []byte {
+  item.TrimLastIf(',')
   return item.bytes
 }
 
 func (item *Item) String() string {
+  item.TrimLastIf(',')
   return string(item.Bytes())
 }
 
@@ -75,14 +78,14 @@ func (item *Item) Len() int {
 }
 
 func (item *Item) TrimLastIf(b byte) bool {
-  l := item.Len() - 1
+  l := item.length - 1
   if l == -1 || item.bytes[l] != b { return false }
   item.Position(l)
   return true
 }
 
 func (item *Item) Position(position int) bool {
-  if position < 0 || position > cap(item.bytes){
+  if position < 0 || position > cap(item.bytes) {
     return false
   }
   item.length = position

@@ -103,22 +103,22 @@ func TestJsonAMultiValueObject(t *testing.T) {
 }
 
 func TestJsonNestedObjects(t *testing.T) {
-  expected := `[1,{"name":"goku","levels":[2,{"over":{"9000":"!","acquired":"2012-12-12T00:00:00Z"}}]}]`
+  expected := `[1,{"name":"goku","levels":[2,{"over":{"9000":"!"},"acquired":"2012-12-12T00:00:00Z"}],"age":12}]`
   item := newJsonItem(100, nil)
   item.BeginArray()
   item.WriteInt(1)
   item.BeginObject()
   item.WriteKeyString("name","goku")
-
   item.WriteKeyArray("levels")
   item.WriteInt(2)
   item.BeginObject()
   item.WriteKeyObject("over")
   item.WriteKeyString("9000", "!")
+  item.EndObject()
   item.WriteKeyTime("acquired", time.Date(2012, time.December, 12, 0, 0, 0, 0, time.UTC))
   item.EndObject()
-  item.EndObject()
   item.EndArray()
+  item.WriteKeyInt("age",12)
   item.EndObject()
   item.EndArray()
   actual := item.String()
