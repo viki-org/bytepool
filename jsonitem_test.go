@@ -15,6 +15,16 @@ func TestJsonCanWriteAnEncodedString(t *testing.T) {
   }
 }
 
+func TestJsonCanWriteAnEncodedStringWithSlashes(t *testing.T) {
+  expected := `"\\over \"\\\\9000/\""`
+  item := newJsonItem(100, nil)
+  item.WriteString(`\over "\\9000/"`)
+  actual := item.String()
+  if actual != expected {
+    t.Errorf("Expecting %q, got %q", expected, actual)
+  }
+}
+
 func TestJsonCanWriteAString(t *testing.T) {
   expected := `"over "9000""`
   item := newJsonItem(100, nil)
