@@ -124,6 +124,7 @@ func (item *JsonItem) Close() error {
   item.TrimLastIf(',')
   item.Item.Close()
   if item.pool != nil {
+    item.depth = 0
     item.pool.list <- item
   }
   return nil
