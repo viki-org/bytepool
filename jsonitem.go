@@ -49,15 +49,15 @@ func (item *JsonItem) WriteKeyString(key, value string) int {
 }
 
 func (item *JsonItem) WriteKeySafeString(key, value string) int {
-  return item.WriteKeyValue(key, `"` + value + `"`)
+  return item.WriteKeyValue(key, value, true)
 }
 
 func (item *JsonItem) WriteKeyInt(key string, value int) int {
-  return item.WriteKeyValue(key, strconv.Itoa(value))
+  return item.WriteKeyValue(key, strconv.Itoa(value), false)
 }
 
 func (item *JsonItem) WriteKeyBool(key string, value bool) int {
-  return item.WriteKeyValue(key, strconv.FormatBool(value))
+  return item.WriteKeyValue(key, strconv.FormatBool(value), false)
 }
 
 func (item *JsonItem) WriteKeyTime(key string, value time.Time) int {
@@ -78,15 +78,20 @@ func (item *JsonItem) WriteKeyObject(key string) int {
   return n
 }
 
-func (item *JsonItem) WriteKeyValue(key, value string) int {
+func (item *JsonItem) WriteKeyValue(key, value string, surround bool) int {
   n := item.writeString(key, false)
   if item.WriteByte(byte(':')) { n++ }
+  if surround { item.WriteByte(byte('"')); n++ }
   n += item.Item.WriteString(value)
+  if surround { item.WriteByte(byte('"')); n++ }
   return item.delimit(n)
 }
 
 func (item *JsonItem) writeString(s string, delimit bool) int {
-  n := item.Item.WriteString(`"` + s + `"`)
+  n := 0
+  if item.WriteByte(byte('"')) { n++ }
+  n += item.Item.WriteString(s)
+  if item.WriteByte(byte('"')) { n++ }
   if delimit == false { return n }
   return item.delimit(n)
 }
