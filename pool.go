@@ -53,6 +53,6 @@ func (pool *Pool) Len() int {
 	return len(pool.list)
 }
 
-func (pool *Pool) Misses() int32 {
-	return atomic.LoadInt32(&pool.misses)
+func (pool *Pool) Misses() int {
+	return int(atomic.LoadInt32(&pool.misses))
 }
