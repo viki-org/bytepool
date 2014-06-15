@@ -7,8 +7,6 @@ This is similar to sync.Pool in (unreleased) Go 1.3
 */
 package bytepool
 
-// Package bytepool provides a pool of fixed-length []byte
-
 import (
 	"sync/atomic"
 )

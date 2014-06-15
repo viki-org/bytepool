@@ -19,7 +19,7 @@ func (s *TestSuite) TestPoolEachItemIsOfASpecifiedSize(c *C) {
 	item := p.Checkout()
 	defer item.Close()
 
-  c.Assert(cap(item.bytes), Equals, 9, Commentf("expecting array to have a capacity of %d, got %d"))
+  c.Assert(cap(item.bytes), Equals, 9, Commentf("expecting array to have a capacity of %d, got %d", 9, cap(item.bytes)))
 }
 
 func (s *TestSuite) TestPoolDynamicallyCreatesAnItemWhenPoolIsEmpty(c *C) {
