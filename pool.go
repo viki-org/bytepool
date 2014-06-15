@@ -13,7 +13,7 @@ import (
 
 // The pool of byte-slices
 //    misses: count when checkout fails (there's no more slices)
-//    capacity: size of each slices 
+//    capacity: size of each slices
 //    list: the pool
 type Pool struct {
 	misses   int32
