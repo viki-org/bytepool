@@ -1,11 +1,10 @@
 package bytepool
 
-// Package bytepool provides a pool of fixed-length []byte
-
 import (
 	"sync/atomic"
 )
 
+// A specialized Pool for making json
 type JsonPool struct {
 	misses   int32
 	capacity int
@@ -23,6 +22,7 @@ func NewJson(count int, capacity int) *JsonPool {
 	return p
 }
 
+// This also blocks when there's no more item in pool
 func (pool *JsonPool) Checkout() *JsonItem {
 	var item *JsonItem
 	select {
