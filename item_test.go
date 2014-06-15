@@ -3,22 +3,20 @@ package bytepool
 import (
 	"bytes"
 	"io"
-	"testing"
+	. "gopkg.in/check.v1"
 )
 
-func TestCanWriteAString(t *testing.T) {
+func (s *TestSuite) TestCanWriteAString(c *C) {
 	expected := "over 9000"
 	item := newItem(10, nil)
 	item.WriteString("over ")
 	item.WriteString("9000")
 	actual := item.String()
 
-	if actual != expected {
-		t.Errorf("Expecting %q, got %q", expected, actual)
-	}
+  c.Assert(actual, Equals, expected, Commentf("Expecting %q, got %q", expected, actual))
 }
 
-func TestCanWriteAByteArray(t *testing.T) {
+func (s *TestSuite) TestCanWriteAByteArray(c *C) {
 	expected := []byte("the spice must flow")
 	item := newItem(60, nil)
 	item.Write([]byte("the "))
@@ -27,12 +25,10 @@ func TestCanWriteAByteArray(t *testing.T) {
 	item.Write([]byte("flow"))
 	actual := item.Bytes()
 
-	if bytes.Compare(actual, expected) != 0 {
-		t.Errorf("Expecting %v, got %v", expected, actual)
-	}
+  c.Assert(actual, DeepEquals, expected, Commentf("Expecting %q, got %q", expected, actual))
 }
 
-func TestWriteAByte(t *testing.T) {
+func (s *TestSuite) TestWriteAByte(c *C) {
 	expected := []byte("the sp")
 	item := newItem(60, nil)
 	item.Write([]byte("the "))
@@ -40,12 +36,10 @@ func TestWriteAByte(t *testing.T) {
 	item.WriteByte(byte('p'))
 	actual := item.Bytes()
 
-	if bytes.Compare(actual, expected) != 0 {
-		t.Errorf("Expecting %v, got %v", expected, actual)
-	}
+  c.Assert(actual, DeepEquals, expected, Commentf("Expecting %q, got %q", expected, actual))
 }
 
-func TestDoesNotWriteAByteWhenFull(t *testing.T) {
+func (s *TestSuite) TestDoesNotWriteAByteWhenFull(c *C) {
 	expected := []byte("the s")
 	item := newItem(5, nil)
 	item.Write([]byte("the "))
@@ -53,37 +47,29 @@ func TestDoesNotWriteAByteWhenFull(t *testing.T) {
 	item.WriteByte(byte('p'))
 	actual := item.Bytes()
 
-	if bytes.Compare(actual, expected) != 0 {
-		t.Errorf("Expecting %v, got %v", expected, actual)
-	}
+  c.Assert(actual, DeepEquals, expected, Commentf("Expecting %q, got %q", expected, actual))
 }
 
-func TestHAndlesReadingAnExactSize(t *testing.T) {
+func (s *TestSuite) TestHAndlesReadingAnExactSize(c *C) {
 	expected := "12345"
 	item := newItem(5, nil)
 	buffer := bytes.NewBufferString(expected)
 	item.ReadFrom(buffer)
 
-	if item.String() != expected {
-		t.Errorf("Expecting %v, got %v", expected, item.String())
-	}
+  c.Assert(item.String(), Equals, expected, Commentf("Expecting %v, got %v", expected, item.String()))
 }
 
-func TestCanWriteFromAReader(t *testing.T) {
+func (s *TestSuite) TestCanWriteFromAReader(c *C) {
 	expected := []byte("I am in a reader")
 	item := newItem(60, nil)
 	n, _ := item.ReadFrom(bytes.NewBuffer(expected))
 	actual := item.Bytes()
 
-	if bytes.Compare(actual, expected) != 0 {
-		t.Errorf("Expecting %v, got %v", expected, actual)
-	}
-	if int(n) != len(expected) {
-		t.Errorf("Expecting length of %v, got %v", len(expected), n)
-	}
+  c.Assert(actual, DeepEquals, expected, Commentf("Expecting %q, got %q", expected, actual))
+  c.Assert(int(n), Equals, len(expected), Commentf("Expecting %v, got %v", len(expected), int(n)))
 }
 
-func TestCanWriteFromMultipleSources(t *testing.T) {
+func (s *TestSuite) TestCanWriteFromMultipleSources(c *C) {
 	expected := []byte("startI am in a readerend")
 	bufferContent := []byte("I am in a reader")
 	item := newItem(100, nil)
@@ -92,155 +78,115 @@ func TestCanWriteFromMultipleSources(t *testing.T) {
 	item.WriteString("end")
 	actual := item.Bytes()
 
-	if bytes.Compare(actual, expected) != 0 {
-		t.Errorf("Expecting %v, got %v", expected, actual)
-	}
-	if int(n) != len(bufferContent) {
-		t.Errorf("Expecting length of %v, got %v", len(bufferContent), n)
-	}
+  c.Assert(actual, DeepEquals, expected, Commentf("Expecting %q, got %q", expected, actual))
+  c.Assert(int(n), Equals, len(bufferContent), Commentf("Expecting %v, got %v", len(bufferContent), int(n)))
 }
 
-func TestCanSetThePosition(t *testing.T) {
+func (s *TestSuite) TestCanSetThePosition(c *C) {
 	expected := "hello."
 	item := newItem(100, nil)
 	item.WriteString("hello world")
 	item.Position(5)
 	item.WriteString(".")
 
-	if item.String() != expected {
-		t.Errorf("Expecting %v, got %v", expected, item.String())
-	}
+  c.Assert(item.String(), Equals, expected, Commentf("Expecting %v, got %v", expected, item.String()))
 }
 
-func TestCloseResetsTheLength(t *testing.T) {
+func (s *TestSuite) TestCloseResetsTheLength(c *C) {
 	item := newItem(100, nil)
 	item.WriteString("hello world")
 	item.Close()
-	if item.Len() != 0 {
-		t.Errorf("Expecting length of 0, got %v", item.Len())
-	}
-	item.WriteString("hello")
 
+  c.Assert(item.Len(), Equals, 0, Commentf("Expecting length of 0, got %v", item.Len()))
+
+	item.WriteString("hello")
 	expected := "hello"
 	actual := item.String()
-	if actual != expected {
-		t.Errorf("Expecting %q, got %q", expected, actual)
-	}
+  c.Assert(actual, Equals, expected, Commentf("Expecting %q, got %q", expected, actual))
 }
 
-func TestCannotSetThePositionToANegativeValue(t *testing.T) {
+func (s *TestSuite) TestCannotSetThePositionToANegativeValue(c *C) {
 	expected := "hello world."
 	item := newItem(25, nil)
 	item.WriteString("hello world")
 	item.Position(-10)
 	item.WriteString(".")
 
-	if item.String() != expected {
-		t.Errorf("Expecting %v, got %v", expected, item.String())
-	}
+  c.Assert(item.String(), Equals, expected, Commentf("Expecting %v, got %v", expected, item.String()))
 }
 
-func TestCannotSetThePositionBeyondTheLength(t *testing.T) {
+func (s *TestSuite) TestCannotSetThePositionBeyondTheLength(c *C) {
 	expected := "hello world."
 	item := newItem(25, nil)
 	item.WriteString("hello world")
 	item.Position(30)
 	item.WriteString(".")
 
-	if item.String() != expected {
-		t.Errorf("Expecting %v, got %v", expected, item.String())
-	}
+  c.Assert(item.String(), Equals, expected, Commentf("Expecting %v, got %v", expected, item.String()))
 }
 
-func TestTrimLastIfTrimsOnMatch(t *testing.T) {
+func (s *TestSuite) TestTrimLastIfTrimsOnMatch(c *C) {
 	expected := "hello world"
 	item := newItem(25, nil)
 	item.WriteString("hello world.")
 	r := item.TrimLastIf(byte('.'))
-	if r != true {
-		t.Error("Expecting TrimLastIf to return true")
-	}
-	if item.String() != expected {
-		t.Errorf("Expecting %v, got %v", expected, item.String())
-	}
+  c.Assert(r, Equals, true, Commentf("Expecting TrimLastIf to return true"))
+  c.Assert(item.String(), Equals, expected, Commentf("Expecting %v, got %v", expected, item.String()))
 }
 
-func TestTrimLastIfTrimsOnNoMatch(t *testing.T) {
+func (s *TestSuite) TestTrimLastIfTrimsOnNoMatch(c *C) {
 	expected := "hello world."
 	item := newItem(25, nil)
 	item.WriteString("hello world.")
 	r := item.TrimLastIf(byte(','))
-	if r != false {
-		t.Error("Expecting TrimLastIf to return false")
-	}
-	if item.String() != expected {
-		t.Errorf("Expecting %v, got %v", expected, item.String())
-	}
+  c.Assert(r, Equals, false, Commentf("Expecting TrimLastIf to return true"))
+  c.Assert(item.String(), Equals, expected, Commentf("Expecting %v, got %v", expected, item.String()))
 }
 
-func TestTruncatesTheContentToTheLength(t *testing.T) {
+func (s *TestSuite) TestTruncatesTheContentToTheLength(c *C) {
 	expected := "hell"
 	item := newItem(4, nil)
 	item.WriteString("hello")
 	actual := item.String()
-	if actual != expected {
-		t.Errorf("Expecting %q, got %q", expected, actual)
-	}
+
+  c.Assert(actual, Equals, expected, Commentf("Expecting %q, got %q", expected, actual))
 
 	item.WriteString("world")
 	actual = item.String()
-	if actual != expected {
-		t.Errorf("Expecting %q, got %q", expected, actual)
-	}
+
+  c.Assert(actual, Equals, expected, Commentf("Expecting %q, got %q", expected, actual))
 }
 
-func TestCanReadIntoVariousSizedByteArray(t *testing.T) {
+func (s *TestSuite) TestCanReadIntoVariousSizedByteArray(c *C) {
 	for size, expected := range map[int]string{3: "hel", 5: "hello", 7: "hello\x00\x00"} {
 		item := newItem(5, nil)
 		item.WriteString("hello")
 		target := make([]byte, size)
 		item.Read(target)
-		if string(target) != expected {
-			t.Errorf("Expecting %q, got %q", expected, string(target))
-		}
+    c.Assert(string(target), Equals, expected, Commentf("Expecting %q, got %q", expected, string(target)))
 	}
 }
 
-func TestReadDoesNotAutomaticallyRewind(t *testing.T) {
+func (s *TestSuite) TestReadDoesNotAutomaticallyRewind(c *C) {
 	item := newItem(5, nil)
 	item.WriteString("hello")
 	b := make([]byte, 5)
 
 	n, err := item.Read(b[0:2])
-	if n != 2 {
-		t.Errorf("expecting to have read 2 bytes, but got %d", n)
-	}
-	if err != nil {
-		t.Errorf("should have gotten nil error, got %v", err)
-	}
-	if string(b[0:2]) != "he" {
-		t.Errorf("expecting to have read he, got %v", string(b[0:2]))
-	}
+
+  c.Assert(n, Equals, 2, Commentf("expecting to have read 2 bytes, but got %d", n))
+  c.Assert(err, IsNil, Commentf("should have gotten nil error, got %v", err))
+  c.Assert(string(b[0:2]), Equals, "he", Commentf("expecting to have read `he`, got %v", string(b[0:2])))
 
 	n, err = item.Read(b[2:])
-	if n != 3 {
-		t.Errorf("expecting to have read 3 bytes, but got %d", n)
-	}
-	if err != io.EOF {
-		t.Errorf("error should be io.EOF, got %v", err)
-	}
-	if string(b[0:5]) != "hello" {
-		t.Errorf("expecting to have read hello, got %v", string(b[0:5]))
-	}
+
+  c.Assert(n, Equals, 3, Commentf("expecting to have read 3 bytes, but got %d", n))
+  c.Assert(err, Equals, io.EOF, Commentf("error should be io.EOF, got %v", err))
+  c.Assert(string(b[0:5]), Equals, "hello", Commentf("expecting to have read `hello`, got %v", string(b[0:5])))
 
 	n, err = item.Read(b)
-	if n != 0 {
-		t.Errorf("expecting to have read 0 bytes, but got %d", n)
-	}
-	if err != io.EOF {
-		t.Errorf("error should be io.EOF, got %v", err)
-	}
-	if string(b[0:5]) != "hello" {
-		t.Errorf("expecting to have read hello, got %v", string(b[0:5]))
-	}
+
+  c.Assert(n, Equals, 0, Commentf("expecting to have read 0 bytes, but got %d", n))
+  c.Assert(err, Equals, io.EOF, Commentf("error should be io.EOF, got %v", err))
+  c.Assert(string(b[0:5]), Equals, "hello", Commentf("expecting to have read `hello`, got %v", string(b[0:5])))
 }
