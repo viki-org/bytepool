@@ -1,50 +1,47 @@
 package bytepool
 
 import (
-  "reflect"
-  "testing"
+	. "gopkg.in/check.v1"
+	"reflect"
+	"testing"
 )
 
-func TestPoolEachItemIsOfASpecifiedSize(t *testing.T) {
-  expected := 9
-  p := New(1, expected)
-  item := p.Checkout()
-  defer item.Close()
-  if cap(item.bytes) != expected {
-    t.Errorf("expecting array to have a capacity of %d, got %d", expected, cap(item.bytes))
-  }
+type TestSuite struct{}
+
+var _ = Suite(&TestSuite{})
+
+func Test(t *testing.T) { TestingT(t) }
+
+func (s *TestSuite) TestPoolEachItemIsOfASpecifiedSize(c *C) {
+	p := New(1, 9)
+	item := p.Checkout()
+	defer item.Close()
+
+	c.Assert(cap(item.bytes), Equals, 9, Commentf("expecting array to have a capacity of %d, got %d", 9, cap(item.bytes)))
 }
 
-func TestPoolDynamicallyCreatesAnItemWhenPoolIsEmpty(t *testing.T) {
-  p := New(1,2)
-  item1 := p.Checkout()
-  item2 := p.Checkout()
-  if cap(item2.bytes) != 2 {
-    t.Error("Dynamically created item was not properly initialized")
-  }
-  if item2.pool != nil {
-    t.Error("The dynamically created item should have a nil pool")
-  }
+func (s *TestSuite) TestPoolDynamicallyCreatesAnItemWhenPoolIsEmpty(c *C) {
+	p := New(1, 2)
+	item1 := p.Checkout()
+	item2 := p.Checkout()
 
-  item1.Close()
-  item2.Close()
-  if p.Len() != 1 {
-    t.Errorf("Expecting a pool lenght of 1, got %d", p.Len())
-  }
-  if p.Misses() != 1 {
-    t.Errorf("Expecting a miss count of 1, got %d", p.Misses())
-  }
+	c.Assert(cap(item2.bytes), Equals, 2, Commentf("Dynamically created item was not properly initialized"))
+	c.Assert(item2.pool, IsNil, Commentf("The dynamically created item should have a nil pool"))
 
+	item1.Close()
+	item2.Close()
+
+	c.Assert(p.Len(), Equals, 1, Commentf("Expecting a pool length of 1, got %d", p.Len()))
+	c.Assert(p.Misses(), Equals, 1, Commentf("Expecting a miss count of 1, got %d", p.Misses()))
 }
-func TestPoolReleasesAnItemBackIntoThePool(t *testing.T) {
-  p := New(1, 20)
-  item1 := p.Checkout()
-  pointer := reflect.ValueOf(item1).Pointer()
-  item1.Close()
 
-  item2 := p.Checkout()
-  defer item2.Close()
-  if reflect.ValueOf(item2).Pointer() != pointer {
-    t.Error("Pool returned an unexected item")
-  }
+func (s *TestSuite) TestPoolReleasesAnItemBackIntoThePool(c *C) {
+	p := New(1, 20)
+	item1 := p.Checkout()
+	pointer := reflect.ValueOf(item1).Pointer()
+	item1.Close()
+	item2 := p.Checkout()
+	defer item2.Close()
+
+	c.Assert(reflect.ValueOf(item2).Pointer(), Equals, pointer, Commentf("Pool returned an unexpected item"))
 }
