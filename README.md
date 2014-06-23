@@ -3,6 +3,13 @@ BytePool manages a thread-safe pool of `[]byte`. By using a pool of pre-allocate
 
 If the pool is empty, new items will be created on the fly, but the size of the pool will not grow. Furthermore, the returned items are fixed-length `[]byte` - they will not grow as needed. The idea is for you to favor over-allocation upfront.
 
+#### NOTE
+Perhaps a slightly more generic version of pool will be coming in Go 1.3, as in [sync.Pool](http://tip.golang.org/pkg/sync/#Pool)
+
+### Installation
+
+    go get github.com/viki-org/bytepool.v1
+
 ### Example
 A common example is reading the body of an HTTP Request. The memory-unfriendly approach is to do:
 
@@ -60,7 +67,6 @@ You can also use the `WriteKeyValue` to append other JSON object/array that is p
   buffer.EndObject()
   println(buffer.String()) // outputs: {"name":"tyler","metadata":{"age":12}}
 
-### Installation
-Install using the "go get" command:
-
-    go get github.com/viki-org/bytepool
+### Credits
+Bytepool is open-sourced, used and maintained by [Viki](https://github.com/viki-org).
+Much of the work goes to [Karl](https://github.com/karlseguin), [Cristobal](https://github.com/cviedmai)
