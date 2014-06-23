@@ -8,7 +8,7 @@ Perhaps a slightly more generic version of pool will be coming in Go 1.3, as in 
 
 ### Installation
 
-    go get github.com/exklamationmark/bytepool.v1
+    go get github.com/viki-org/bytepool.v1
 
 ### Example
 A common example is reading the body of an HTTP Request. The memory-unfriendly approach is to do:
